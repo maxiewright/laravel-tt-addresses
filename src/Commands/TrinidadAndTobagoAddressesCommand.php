@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace MaxieWright\TrinidadAndTobagoAddresses\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class TrinidadAndTobagoAddressesCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-tt-addresses';
 
     public $description = 'My command';
 
