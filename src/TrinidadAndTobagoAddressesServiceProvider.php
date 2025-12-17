@@ -47,7 +47,7 @@ class TrinidadAndTobagoAddressesServiceProvider extends PackageServiceProvider
     {
         // Bind the package's main class into the container for the facade to resolve.
         $this->app->singleton('tt-addresses', function () {
-            return new TrinidadAndTobagoAddresses();
+            return new TrinidadAndTobagoAddresses;
         });
     }
 }
