@@ -25,12 +25,12 @@ class TrinidadAndTobagoAddressesServiceProvider extends PackageServiceProvider
                 'create_tt_divisions_table',
                 'create_tt_cities_table',
             ])
-            ->hasCommands(function (InstallCommand $command) {
+            ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->publishConfigFile()
                     ->publishMigrations()
                     ->askToRunMigrations()
-                    ->askToStarRepoOnGitHub('ttr/laravel-tt-addresses')
+                    ->askToStarRepoOnGitHub('maxiewright/laravel-tt-addresses')
                     ->endWith(function (InstallCommand $command) {
                         $command->info('');
                         $command->info('📍 Trinidad & Tobago Addresses installed!');
@@ -41,5 +41,13 @@ class TrinidadAndTobagoAddressesServiceProvider extends PackageServiceProvider
                         $command->info('');
                     });
             });
+    }
+
+    public function registeringPackage(): void
+    {
+        // Bind the package's main class into the container for the facade to resolve.
+        $this->app->singleton('tt-addresses', function () {
+            return new TrinidadAndTobagoAddresses();
+        });
     }
 }
