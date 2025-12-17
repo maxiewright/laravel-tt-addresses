@@ -371,8 +371,7 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
-- [Max Wright](https://github.com/maxiewright)
-- [Trinidad and Tobago Regiment](https://ttdf.mil.tt)
+- [Maxie Wright](https://github.com/maxiewright)
 - [All Contributors](../../contributors)
 
 ## License
@@ -381,4 +380,4 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 
 ---
 
-Made with 🇹🇹 for Trinidad and Tobago developers.
+Made with ❤️ for 🇹🇹 developers.
