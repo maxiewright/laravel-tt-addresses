@@ -12,48 +12,48 @@ it('can run division seeder successfully', function () {
 
     expect(Division::count())->toBe(0);
 
-    (new DivisionSeeder())->run();
+    (new DivisionSeeder)->run();
 
     expect(Division::count())->toBe(15);
 });
 
 it('can run city seeder successfully', function () {
-    (new DivisionSeeder())->run();
+    (new DivisionSeeder)->run();
     City::query()->delete();
 
     expect(City::count())->toBe(0);
 
-    (new CitySeeder())->run();
+    (new CitySeeder)->run();
 
     expect(City::count())->toBeGreaterThan(500);
 });
 
 it('can run division seeder multiple times safely', function () {
-    (new DivisionSeeder())->run();
+    (new DivisionSeeder)->run();
 
     expect(Division::count())->toBe(15);
 
     // Run again - should not create duplicates
-    (new DivisionSeeder())->run();
+    (new DivisionSeeder)->run();
 
     expect(Division::count())->toBe(15);
 });
 
 it('can run city seeder multiple times safely', function () {
-    (new DivisionSeeder())->run();
-    (new CitySeeder())->run();
+    (new DivisionSeeder)->run();
+    (new CitySeeder)->run();
 
     $countBefore = City::count();
 
     // Run again - should not create duplicates
-    (new CitySeeder())->run();
+    (new CitySeeder)->run();
 
     expect(City::count())->toBe($countBefore);
 });
 
 it('ensures all cities belong to valid divisions', function () {
-    (new DivisionSeeder())->run();
-    (new CitySeeder())->run();
+    (new DivisionSeeder)->run();
+    (new CitySeeder)->run();
 
     $cities = City::all();
 
@@ -64,7 +64,7 @@ it('ensures all cities belong to valid divisions', function () {
 });
 
 it('ensures division abbreviations are unique', function () {
-    (new DivisionSeeder())->run();
+    (new DivisionSeeder)->run();
 
     $abbreviations = Division::pluck('abbreviation')->toArray();
     $uniqueAbbreviations = array_unique($abbreviations);

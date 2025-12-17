@@ -1,6 +1,5 @@
 <?php
 
-
 use MaxieWright\TrinidadAndTobagoAddresses\Database\Seeders\CitySeeder;
 use MaxieWright\TrinidadAndTobagoAddresses\Database\Seeders\DivisionSeeder;
 use MaxieWright\TrinidadAndTobagoAddresses\Models\City;

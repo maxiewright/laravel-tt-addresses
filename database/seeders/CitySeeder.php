@@ -199,7 +199,7 @@ class CitySeeder extends Seeder
             // ═══════════════════════════════════════════════════════════════
             // D
             // ═══════════════════════════════════════════════════════════════
-            ["name" => "D'Abadie", "division_id" => 9],
+            ['name' => "D'Abadie", 'division_id' => 9],
             ['name' => 'Debe', 'division_id' => 4],
             ['name' => 'Debe Village', 'division_id' => 4],
             ['name' => 'Delaford', 'division_id' => 15],
@@ -224,7 +224,7 @@ class CitySeeder extends Seeder
             ['name' => 'El Dorado', 'division_id' => 9],
             ['name' => 'El Quemado', 'division_id' => 1],
             ['name' => 'El Socorro', 'division_id' => 7],
-            ["name" => "Englishman's Bay", "division_id" => 15],
+            ['name' => "Englishman's Bay", 'division_id' => 15],
             ['name' => 'Enterprise', 'division_id' => 11],
             ['name' => 'Erin', 'division_id' => 8],
             ['name' => 'Erthig', 'division_id' => 7],
@@ -308,7 +308,7 @@ class CitySeeder extends Seeder
             ['name' => 'Homard', 'division_id' => 6],
             ['name' => 'Hope', 'division_id' => 15],
             ['name' => 'Howson', 'division_id' => 6],
-            ["name" => "Hubert's Town", "division_id" => 12],
+            ['name' => "Hubert's Town", 'division_id' => 12],
 
             // ═══════════════════════════════════════════════════════════════
             // I
@@ -334,12 +334,12 @@ class CitySeeder extends Seeder
             ['name' => 'Kelly Junction', 'division_id' => 1],
             ['name' => 'Kelly Village', 'division_id' => 9],
             ['name' => 'Kilgwyn', 'division_id' => 15],
-            ["name" => "King's Bay", "division_id" => 15],
+            ['name' => "King's Bay", 'division_id' => 15],
 
             // ═══════════════════════════════════════════════════════════════
             // L
             // ═══════════════════════════════════════════════════════════════
-            ["name" => "L'Anse Noire", "division_id" => 6],
+            ['name' => "L'Anse Noire", 'division_id' => 6],
             ['name' => 'La Basse', 'division_id' => 7],
             ['name' => 'La Brea', 'division_id' => 8],
             ['name' => 'La Carriere', 'division_id' => 1],
@@ -388,7 +388,7 @@ class CitySeeder extends Seeder
             ['name' => 'Maracas', 'division_id' => 9],
             ['name' => 'Maracas Bay', 'division_id' => 7],
             ['name' => 'Maraval', 'division_id' => 2],
-            ["name" => "Mary's Hill", "division_id" => 15],
+            ['name' => "Mary's Hill", 'division_id' => 15],
             ['name' => 'Mason Hall', 'division_id' => 15],
             ['name' => 'Matelot', 'division_id' => 6],
             ['name' => 'Matura', 'division_id' => 6],

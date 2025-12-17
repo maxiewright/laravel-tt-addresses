@@ -114,7 +114,7 @@ class Division extends Model
     {
         $query->where(function (Builder $q) use ($search) {
             $q->where('name', 'like', "%{$search}%")
-              ->orWhere('abbreviation', 'like', "%{$search}%");
+                ->orWhere('abbreviation', 'like', "%{$search}%");
         });
     }
 

@@ -3,13 +3,11 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-
 use MaxieWright\TrinidadAndTobagoAddresses\Concerns\HasTrinidadAndTobagoAddress;
 use MaxieWright\TrinidadAndTobagoAddresses\Database\Seeders\CitySeeder;
 use MaxieWright\TrinidadAndTobagoAddresses\Database\Seeders\DivisionSeeder;
 use MaxieWright\TrinidadAndTobagoAddresses\Models\City;
 use MaxieWright\TrinidadAndTobagoAddresses\Models\Division;
-
 
 // Create a test model that uses the trait
 class TestAddress extends Model
@@ -37,8 +35,8 @@ beforeEach(function () {
         $table->timestamps();
     });
 
-    (new DivisionSeeder())->run();
-    (new CitySeeder())->run();
+    (new DivisionSeeder)->run();
+    (new CitySeeder)->run();
 });
 
 afterEach(function () {
