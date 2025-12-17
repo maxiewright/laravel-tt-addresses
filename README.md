@@ -33,7 +33,7 @@ composer require maxiewright/trinidad-and-tobago-addresses
 Run the install command which will guide you through the setup:
 
 ```bash
-php artisan trinidad-and-tobago-addresses:install
+php artisan tt-addresses:install
 ```
 
 This will:
