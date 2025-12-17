@@ -1,60 +1,349 @@
-# Trinidad and Tobago address management for Laravel applications - divisions, cities, and address formatting
+# Laravel Trinidad & Tobago Addresses
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/maxiewright/laravel-tt-addresses.svg?style=flat-square)](https://packagist.org/packages/maxiewright/laravel-tt-addresses)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/maxiewright/laravel-tt-addresses/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/maxiewright/laravel-tt-addresses/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/maxiewright/laravel-tt-addresses/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/maxiewright/laravel-tt-addresses/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/maxiewright/laravel-tt-addresses.svg?style=flat-square)](https://packagist.org/packages/maxiewright/laravel-tt-addresses)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/maxiewright/trinidad-and-tobago-addresses.svg?style=flat-square)](https://packagist.org/packages/maxiewright/trinidad-and-tobago-addresses)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/maxiewright/trinidad-and-tobago-addresses/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/maxiewright/trinidad-and-tobago-addresses/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/maxiewright/trinidad-and-tobago-addresses.svg?style=flat-square)](https://packagist.org/packages/maxiewright/trinidad-and-tobago-addresses)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+A Laravel package providing Trinidad and Tobago administrative divisions and cities/towns/villages for address management. Includes all 15 administrative divisions and 500+ communities.
 
-## Support us
+## Features
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/laravel-tt-addresses.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/laravel-tt-addresses)
+- 🏛️ **15 Administrative Divisions** - All Regional Corporations, Boroughs, City Corporations, and Tobago
+- 🏘️ **500+ Cities/Towns/Villages** - Comprehensive coverage of Trinidad and Tobago communities
+- 🔗 **Eloquent Relationships** - Ready-to-use models with proper relationships
+- 🎨 **Filament Support** - Enums implement `HasLabel` for seamless Filament integration
+- ⚙️ **Configurable** - Customise table names to avoid conflicts
+- 🧪 **Tested** - Full test coverage with Pest
 
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
+## Requirements
 
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+- PHP 8.4+
+- Laravel 10.x, 11.x, or 12.x
 
 ## Installation
 
-You can install the package via composer:
+Install the package via Composer:
 
 ```bash
-composer require maxiewright/laravel-tt-addresses
+composer require maxiewright/trinidad-and-tobago-addresses
 ```
 
-You can publish and run the migrations with:
+### Quick Install (Recommended)
+
+Run the install command which will guide you through the setup:
 
 ```bash
-php artisan vendor:publish --tag="laravel-tt-addresses-migrations"
+php artisan trinidad-and-tobago-addresses:install
+```
+
+This will:
+1. Publish the configuration file
+2. Publish the migrations
+3. Optionally run the migrations
+
+### Manual Installation
+
+If you prefer to install manually:
+
+```bash
+# Publish the config file
+php artisan vendor:publish --tag="trinidad-and-tobago-addresses-config"
+
+# Publish the migrations
+php artisan vendor:publish --tag="trinidad-and-tobago-addresses-migrations"
+
+# Run migrations
 php artisan migrate
 ```
 
-You can publish the config file with:
+### Seed the Data
+
+After running migrations, seed the divisions and cities:
 
 ```bash
-php artisan vendor:publish --tag="laravel-tt-addresses-config"
+php artisan db:seed --class="MaxieWright\TrinidadAndTobagoAddresses\Database\Seeders\DivisionSeeder"
+php artisan db:seed --class="MaxieWright\TrinidadAndTobagoAddresses\Database\Seeders\CitySeeder"
 ```
 
-This is the contents of the published config file:
+Or add them to your `DatabaseSeeder.php`:
+
+```php
+use MaxieWright\TrinidadAndTobagoAddresses\Database\Seeders\DivisionSeeder;
+use MaxieWright\TrinidadAndTobagoAddresses\Database\Seeders\CitySeeder;
+
+public function run(): void
+{
+    $this->call([
+        DivisionSeeder::class,
+        CitySeeder::class,
+        // ... your other seeders
+    ]);
+}
+```
+
+## Configuration
+
+The configuration file is located at `config/trinidad-and-tobago-addresses.php`:
 
 ```php
 return [
+    // Customise table names if they conflict with existing tables
+    'tables' => [
+        'divisions' => 'tt_divisions',
+        'cities' => 'tt_cities',
+    ],
+
+    // ISO country code
+    'country_code' => 'TT',
 ];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="laravel-tt-addresses-views"
 ```
 
 ## Usage
 
+### Basic Queries
+
 ```php
-$trinidadAndTobagoAddresses = new MaxieWright\TrinidadAndTobagoAddresses();
-echo $trinidadAndTobagoAddresses->echoPhrase('Hello, MaxieWright!');
+use MaxieWright\TrinidadAndTobagoAddresses\Models\Division;
+use MaxieWright\TrinidadAndTobagoAddresses\Models\City;
+use MaxieWright\TrinidadAndTobagoAddresses\Enums\DivisionType;
+
+// Get all divisions
+$divisions = Division::all();
+
+// Get only Trinidad divisions
+$trinidadDivisions = Division::trinidad()->get();
+
+// Get only Tobago
+$tobago = Division::tobago()->first();
+
+// Get divisions by type
+$boroughs = Division::ofType(DivisionType::Borough)->get();
+$regionalCorporations = Division::ofType(DivisionType::RegionalCorporation)->get();
+
+// Get all cities in a division
+$chaguanasCities = Division::where('abbreviation', 'CHA')
+    ->first()
+    ->cities;
+
+// Find a city
+$portOfSpain = City::where('name', 'Port-of-Spain')->first();
+$portOfSpain->division->name; // "Port of Spain"
+$portOfSpain->island; // "Trinidad"
+
+// Get full location string
+$city = City::where('name', 'Scarborough')->first();
+$city->full_location; // "Scarborough, Tobago"
 ```
+
+### Division Types
+
+The package includes a `DivisionType` enum with the following values:
+
+| Value | Label | Island |
+|-------|-------|--------|
+| `RegionalCorporation` | Regional Corporation | Trinidad |
+| `Borough` | Borough | Trinidad |
+| `CityCorporation` | City Corporation | Trinidad |
+| `Ward` | Ward | Tobago |
+
+```php
+use MaxieWright\TrinidadAndTobagoAddresses\Enums\DivisionType;
+
+$type = DivisionType::RegionalCorporation;
+$type->label();  // "Regional Corporation"
+$type->island(); // "Trinidad"
+
+// Filament support
+$type->getLabel(); // "Regional Corporation"
+```
+
+### Adding Addresses to Your Models
+
+Use the `HasTrinidadAndTobagoAddress` trait on any model that needs Trinidad and Tobago address fields:
+
+```php
+use Illuminate\Database\Eloquent\Model;
+use MaxieWright\TrinidadAndTobagoAddresses\Concerns\HasTrinidadAndTobagoAddress;
+
+class Customer extends Model
+{
+    use HasTrinidadAndTobagoAddress;
+
+    protected $fillable = [
+        'name',
+        'address_line_1',
+        'address_line_2',
+        'division_id',
+        'city_id',
+    ];
+}
+```
+
+Create a migration for your model:
+
+```php
+Schema::create('customers', function (Blueprint $table) {
+    $table->id();
+    $table->string('name');
+    $table->string('address_line_1')->nullable();
+    $table->string('address_line_2')->nullable();
+    $table->foreignId('division_id')
+          ->nullable()
+          ->constrained(config('trinidad-and-tobago-addresses.tables.divisions'))
+          ->nullOnDelete();
+    $table->foreignId('city_id')
+          ->nullable()
+          ->constrained(config('trinidad-and-tobago-addresses.tables.cities'))
+          ->nullOnDelete();
+    $table->timestamps();
+});
+```
+
+Then use it:
+
+```php
+$customer = Customer::create([
+    'name' => 'John Doe',
+    'address_line_1' => '123 Main Street',
+    'division_id' => 11, // Chaguanas
+    'city_id' => 88,     // Chaguanas city
+]);
+
+$customer->division->name;       // "Chaguanas"
+$customer->city->name;           // "Chaguanas"
+$customer->formatted_address;    // "123 Main Street, Chaguanas, Chaguanas"
+$customer->island;               // "Trinidad"
+```
+
+### Filament Integration
+
+The models and enums are designed to work seamlessly with [FilamentPHP](https://filamentphp.com/).
+
+#### Select Fields
+
+```php
+use Filament\Forms\Components\Select;
+use MaxieWright\TrinidadAndTobagoAddresses\Models\Division;
+use MaxieWright\TrinidadAndTobagoAddresses\Models\City;
+
+// Division select
+Select::make('division_id')
+    ->label('Division')
+    ->options(Division::pluck('name', 'id'))
+    ->searchable()
+    ->preload()
+    ->live(),
+
+// City select (filtered by division)
+Select::make('city_id')
+    ->label('City/Town/Village')
+    ->options(function (callable $get) {
+        $divisionId = $get('division_id');
+        if (!$divisionId) {
+            return City::pluck('name', 'id');
+        }
+        return City::where('division_id', $divisionId)
+            ->pluck('name', 'id');
+    })
+    ->searchable()
+    ->preload(),
+```
+
+#### Using the Enum in Filters
+
+```php
+use Filament\Tables\Filters\SelectFilter;
+use MaxieWright\TrinidadAndTobagoAddresses\Enums\DivisionType;
+
+SelectFilter::make('type')
+    ->options(DivisionType::class),
+```
+
+### Administrative Divisions Reference
+
+| ID | Name | Type | Abbreviation |
+|----|------|------|--------------|
+| 1 | Couva/Tabaquite/Talparo | Regional Corporation | CTT |
+| 2 | Diego Martin | Regional Corporation | DMN |
+| 3 | Mayaro/Rio Claro | Regional Corporation | MRC |
+| 4 | Penal/Debe | Regional Corporation | PED |
+| 5 | Princes Town | Regional Corporation | PRT |
+| 6 | Sangre Grande | Regional Corporation | SGE |
+| 7 | San Juan/Laventille | Regional Corporation | SJL |
+| 8 | Siparia | Regional Corporation | SIP |
+| 9 | Tunapuna/Piarco | Regional Corporation | TUP |
+| 10 | Arima | Borough | ARI |
+| 11 | Chaguanas | Borough | CHA |
+| 12 | Point Fortin | Borough | PTF |
+| 13 | Port of Spain | City Corporation | POS |
+| 14 | San Fernando | City Corporation | SFO |
+| 15 | Tobago | Ward | TOB |
+
+## API Reference
+
+### Division Model
+
+#### Attributes
+- `name` - Division name
+- `type` - DivisionType enum
+- `abbreviation` - Short code (e.g., "POS", "CHA")
+- `island` - "Trinidad" or "Tobago"
+
+#### Relationships
+- `cities()` - HasMany relationship to City
+
+#### Scopes
+- `scopeTrinidad()` - Filter to Trinidad divisions only
+- `scopeTobago()` - Filter to Tobago only
+- `scopeOfType(DivisionType $type)` - Filter by division type
+- `scopeSearch(string $search)` - Search by name or abbreviation
+
+#### Methods
+- `isTobago(): bool` - Check if division is in Tobago
+- `isTrinidad(): bool` - Check if division is in Trinidad
+
+#### Accessors
+- `full_name` - Returns "Division Name (Type Label)"
+
+### City Model
+
+#### Attributes
+- `name` - City/town/village name
+- `division_id` - Foreign key to Division
+
+#### Relationships
+- `division()` - BelongsTo relationship to Division
+
+#### Scopes
+- `scopeTrinidad()` - Filter to Trinidad cities only
+- `scopeTobago()` - Filter to Tobago cities only
+- `scopeInDivision(int|Division $division)` - Filter by division
+- `scopeSearch(string $search)` - Search by name
+
+#### Methods
+- `isTobago(): bool` - Check if city is in Tobago
+- `isTrinidad(): bool` - Check if city is in Trinidad
+
+#### Accessors
+- `full_location` - Returns "City Name, Division Name"
+- `island` - Returns "Trinidad" or "Tobago" via division
+
+### HasTrinidadAndTobagoAddress Trait
+
+#### Relationships
+- `division()` - BelongsTo relationship to Division
+- `city()` - BelongsTo relationship to City
+
+#### Methods
+- `isInTobago(): bool` - Check if address is in Tobago
+- `isInTrinidad(): bool` - Check if address is in Trinidad
+- `hasCompleteAddress(): bool` - Check if address has all required fields
+
+#### Accessors
+- `formatted_address` - Returns formatted single-line address string
+- `formatted_address_multiline` - Returns formatted multi-line address string
+- `island` - Returns "Trinidad" or "Tobago"
+- `country_code` - Returns "TT"
 
 ## Testing
 
@@ -68,7 +357,13 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## Contributing
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+Contributions are welcome! Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+
+### Adding Missing Cities
+
+If you notice a city/town/village is missing, please submit a pull request with:
+1. The city name (correctly spelled)
+2. The correct `division_id` (see Administrative Divisions Reference)
 
 ## Security Vulnerabilities
 
@@ -76,9 +371,14 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
-- [Maxie Wright](https://github.com/maxiewright)
+- [Max Wright](https://github.com/maxiewright)
+- [Trinidad and Tobago Regiment](https://ttdf.mil.tt)
 - [All Contributors](../../contributors)
 
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
+---
+
+Made with 🇹🇹 for Trinidad and Tobago developers.

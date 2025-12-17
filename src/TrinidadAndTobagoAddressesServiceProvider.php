@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MaxieWright\TrinidadAndTobagoAddresses;
 
+use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use MaxieWright\TrinidadAndTobagoAddresses\Commands\TrinidadAndTobagoAddressesCommand;
 
 class TrinidadAndTobagoAddressesServiceProvider extends PackageServiceProvider
 {
@@ -19,7 +21,25 @@ class TrinidadAndTobagoAddressesServiceProvider extends PackageServiceProvider
             ->name('laravel-tt-addresses')
             ->hasConfigFile()
             ->hasViews()
-            ->hasMigration('create_laravel_tt_addresses_table')
-            ->hasCommand(TrinidadAndTobagoAddressesCommand::class);
+            ->hasMigrations([
+                'create_tt_divisions_table',
+                'create_tt_cities_table',
+            ])
+            ->hasCommands(function (InstallCommand $command) {
+                $command
+                    ->publishConfigFile()
+                    ->publishMigrations()
+                    ->askToRunMigrations()
+                    ->askToStarRepoOnGitHub('ttr/laravel-tt-addresses')
+                    ->endWith(function (InstallCommand $command) {
+                        $command->info('');
+                        $command->info('📍 Trinidad & Tobago Addresses installed!');
+                        $command->info('');
+                        $command->info('Run the seeders to populate data:');
+                        $command->info('  php artisan db:seed --class="MaxieWright\TrinidadAndTobagoAddresses\Database\Seeders\DivisionSeeder"');
+                        $command->info('  php artisan db:seed --class="MaxieWright\TrinidadAndTobagoAddresses\Database\Seeders\CitySeeder"');
+                        $command->info('');
+                    });
+            });
     }
 }

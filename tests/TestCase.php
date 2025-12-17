@@ -3,8 +3,8 @@
 namespace MaxieWright\TrinidadAndTobagoAddresses\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Orchestra\Testbench\TestCase as Orchestra;
 use MaxieWright\TrinidadAndTobagoAddresses\TrinidadAndTobagoAddressesServiceProvider;
+use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
@@ -13,25 +13,25 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'MaxieWright\\TrinidadAndTobagoAddresses\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn (string $modelName) => 'MaxieWright\\TrinidadAndTobagoAddresses\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
     }
 
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
         return [
             TrinidadAndTobagoAddressesServiceProvider::class,
         ];
     }
 
-    public function getEnvironmentSetUp($app)
+    public function getEnvironmentSetUp($app): void
     {
         config()->set('database.default', 'testing');
 
-        /*
-         foreach (\Illuminate\Support\Facades\File::allFiles(__DIR__ . '/../database/migrations') as $migration) {
-            (include $migration->getRealPath())->up();
-         }
-         */
+        $migration = include __DIR__ . '/../database/migrations/create_tt_divisions_table.php.stub';
+        $migration->up();
+
+        $migration = include __DIR__ . '/../database/migrations/create_tt_cities_table.php.stub';
+        $migration->up();
     }
 }
