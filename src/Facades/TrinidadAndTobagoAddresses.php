@@ -11,6 +11,7 @@ class TrinidadAndTobagoAddresses extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \MaxieWright\TrinidadAndTobagoAddresses\TrinidadAndTobagoAddresses::class;
+        // Return the container binding key, not the class name
+        return 'tt-addresses';
     }
 }
