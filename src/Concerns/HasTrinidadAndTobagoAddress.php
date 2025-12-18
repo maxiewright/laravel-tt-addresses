@@ -73,7 +73,7 @@ trait HasTrinidadAndTobagoAddress
             $this->address_line_2 ?? null,
             $this->city?->name,
             $this->division?->name,
-            config('trinidad-and-tobago-addresses.country_name', 'Trinidad and Tobago'),
+            config('tt-addresses.country_name', 'Trinidad and Tobago'),
         ]);
 
         return implode("\n", $lines);
@@ -118,6 +118,6 @@ trait HasTrinidadAndTobagoAddress
      */
     public function getCountryCodeAttribute(): string
     {
-        return config('trinidad-and-tobago-addresses.country_code', 'TT');
+        return config('tt-addresses.country_code', 'TT');
     }
 }
