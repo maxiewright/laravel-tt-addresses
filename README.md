@@ -1,8 +1,8 @@
 # Laravel Trinidad & Tobago Addresses
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/maxiewright/trinidad-and-tobago-addresses.svg?style=flat-square)](https://packagist.org/packages/maxiewright/trinidad-and-tobago-addresses)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/maxiewright/trinidad-and-tobago-addresses/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/maxiewright/trinidad-and-tobago-addresses/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/maxiewright/trinidad-and-tobago-addresses.svg?style=flat-square)](https://packagist.org/packages/maxiewright/trinidad-and-tobago-addresses)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/maxiewright/laravel-tt-addresses.svg?style=flat-square)](https://packagist.org/packages/maxiewright/laravel-tt-addresses)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/maxiewright/laravel-tt-addresses/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/maxiewright/laravel-tt-addresses/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/maxiewright/laravel-tt-addresses.svg?style=flat-square)](https://packagist.org/packages/maxiewright/laravel-tt-addresses)
 
 A Laravel package providing Trinidad and Tobago administrative divisions and cities/towns/villages for address management. Includes all 15 administrative divisions and 500+ communities.
 
@@ -25,7 +25,7 @@ A Laravel package providing Trinidad and Tobago administrative divisions and cit
 Install the package via Composer:
 
 ```bash
-composer require maxiewright/trinidad-and-tobago-addresses
+composer require maxiewright/laravel-tt-addresses
 ```
 
 ### Quick Install (Recommended)
@@ -47,10 +47,10 @@ If you prefer to install manually:
 
 ```bash
 # Publish the config file
-php artisan vendor:publish --tag="trinidad-and-tobago-addresses-config"
+php artisan vendor:publish --tag="laravel-tt-addresses-config"
 
 # Publish the migrations
-php artisan vendor:publish --tag="trinidad-and-tobago-addresses-migrations"
+php artisan vendor:publish --tag="laravel-tt-addresses-migrations"
 
 # Run migrations
 php artisan migrate
@@ -83,7 +83,7 @@ public function run(): void
 
 ## Configuration
 
-The configuration file is located at `config/trinidad-and-tobago-addresses.php`:
+The configuration file is located at `config/tt-addresses.php`:
 
 ```php
 return [
@@ -189,11 +189,11 @@ Schema::create('customers', function (Blueprint $table) {
     $table->string('address_line_2')->nullable();
     $table->foreignId('division_id')
           ->nullable()
-          ->constrained(config('trinidad-and-tobago-addresses.tables.divisions'))
+          ->constrained(config('laravel-tt-addresses.tables.divisions'))
           ->nullOnDelete();
     $table->foreignId('city_id')
           ->nullable()
-          ->constrained(config('trinidad-and-tobago-addresses.tables.cities'))
+          ->constrained(config('laravel-tt-addresses.tables.cities'))
           ->nullOnDelete();
     $table->timestamps();
 });

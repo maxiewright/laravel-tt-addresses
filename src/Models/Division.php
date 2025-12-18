@@ -60,7 +60,7 @@ class Division extends Model
      */
     public function getTable(): string
     {
-        return config('trinidad-and-tobago-addresses.tables.divisions', 'tt_divisions');
+        return config('tt-addresses.tables.divisions', 'tt_divisions');
     }
 
     /* ───────────────────────────────────────────────────────────

@@ -10,8 +10,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $tableName = config('trinidad-and-tobago-addresses.tables.cities', 'tt_cities');
-        $divisionsTable = config('trinidad-and-tobago-addresses.tables.divisions', 'tt_divisions');
+        $tableName = config('tt-addresses.tables.cities', 'tt_cities');
+        $divisionsTable = config('tt-addresses.tables.divisions', 'tt_divisions');
 
         Schema::create($tableName, function (Blueprint $table) use ($divisionsTable) {
             $table->id();
@@ -28,6 +28,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists(config('trinidad-and-tobago-addresses.tables.cities', 'tt_cities'));
+        Schema::dropIfExists(config('tt-addresses.tables.cities', 'tt_cities'));
     }
 };

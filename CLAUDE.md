@@ -60,14 +60,14 @@ php artisan db:seed --class="MaxieWright\TrinidadAndTobagoAddresses\Database\See
 - Key fields: `name`, `type` (enum), `abbreviation`, `island`
 - Scopes: `trinidad()`, `tobago()`, `ofType()`, `search()`
 - Relationships: `hasMany(City::class)`
-- Uses configurable table name from `config('trinidad-and-tobago-addresses.tables.divisions')`
+- Uses configurable table name from `config('tt-addresses.tables.divisions')`
 
 **City Model** (`src/Models/City.php`): Represents cities, towns, and villages.
 - Key fields: `division_id`, `name`
 - Scopes: `trinidad()`, `tobago()`, `inDivision()`, `search()`
 - Relationships: `belongsTo(Division::class)`
 - Accessors: `full_location`, `island`
-- Uses configurable table name from `config('trinidad-and-tobago-addresses.tables.cities')`
+- Uses configurable table name from `config('tt-addresses.tables.cities')`
 
 **DivisionType Enum** (`src/Enums/DivisionType.php`): Backed enum for administrative division types.
 - Cases: `RegionalCorporation`, `Borough`, `CityCorporation`, `Ward`
@@ -115,5 +115,5 @@ Tests extend `Orchestra\Testbench\TestCase` via `TestCase` base class. The test 
 - Table names are configurable - always use `getTable()` method or model relationships, never hardcode table names
 - All division and city models support island-specific queries via scopes
 - The package is designed to work with Laravel 11+ and PHP 8.4+
-- Config key prefix is `trinidad-and-tobago-addresses` (note: hyphenated, not snake_case)
+- Config key prefix is `tt-addresses` (note: hyphenated, not snake_case)
 - When referencing models in seeders or commands, use the full namespace under `Database\Seeders` subdirectory

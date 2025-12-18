@@ -46,7 +46,7 @@ class City extends Model
      */
     public function getTable(): string
     {
-        return config('trinidad-and-tobago-addresses.tables.cities', 'tt_cities');
+        return config('tt-addresses.tables.cities', 'tt_cities');
     }
 
     /* ───────────────────────────────────────────────────────────
