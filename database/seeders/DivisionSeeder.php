@@ -137,11 +137,19 @@ class DivisionSeeder extends Seeder
             ],
         ];
 
-        foreach ($divisions as $division) {
-            Division::updateOrCreate(
-                ['abbreviation' => $division['abbreviation']],
-                $division
-            );
-        }
+        $now = now();
+
+        $divisions = array_map(function ($division) use ($now) {
+            return array_merge($division, [
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }, $divisions);
+
+        Division::upsert(
+            $divisions,
+            ['abbreviation'],
+            ['name', 'type', 'island', 'updated_at']
+        );
     }
 }

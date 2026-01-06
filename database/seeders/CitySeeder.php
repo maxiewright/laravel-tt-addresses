@@ -38,14 +38,20 @@ class CitySeeder extends Seeder
     public function run(): void
     {
         $cities = $this->getCities();
+        $now = now();
 
-        foreach ($cities as $city) {
-            City::updateOrCreate(
-                [
-                    'division_id' => $city['division_id'],
-                    'name' => $city['name'],
-                ],
-                $city
+        $cities = array_map(function ($city) use ($now) {
+            return array_merge($city, [
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }, $cities);
+
+        foreach (array_chunk($cities, 500) as $chunk) {
+            City::upsert(
+                $chunk,
+                ['division_id', 'name'],
+                ['updated_at']
             );
         }
     }
