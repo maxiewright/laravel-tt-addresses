@@ -29,7 +29,6 @@ class TrinidadAndTobagoAddressesServiceProvider extends PackageServiceProvider
                 'create_tt_divisions_table',
                 'create_tt_cities_table',
                 'add_coordinates_to_tt_cities_table', // For upgrades
-                'create_tt_addresses_table',
             ])
             ->hasCommand(Commands\FetchCityCoordinatesCommand::class)
             ->hasInstallCommand(function (InstallCommand $command) {
