@@ -1,19 +1,47 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
-        Schema::create('laravel_tt_addresses_table', function (Blueprint $table) {
-            $table->id();
+        $tableName = config('tt-addresses.tables.addresses', 'tt_addresses');
+        $divisionsTable = config('tt-addresses.tables.divisions', 'tt_divisions');
+        $citiesTable = config('tt-addresses.tables.cities', 'tt_cities');
 
-            // add fields
+        Schema::create($tableName, function (Blueprint $table) use ($divisionsTable, $citiesTable) {
+            $table->id();
+            $table->morphs('addressable');
+            $table->string('type');
+            $table->boolean('is_primary')->default(false)->index();
+
+            $table->string('line_1');
+            $table->string('line_2')->nullable();
+            $table->foreignId('division_id')->nullable()
+                ->constrained($divisionsTable)
+                ->nullOnDelete();
+            $table->foreignId('city_id')->nullable()
+                ->constrained($citiesTable)
+                ->nullOnDelete();
+            $table->string('postal_code')->nullable();
+
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 11, 8)->nullable();
 
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->index(['latitude', 'longitude']);
         });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists(config('tt-addresses.tables.addresses', 'tt_addresses'));
     }
 };
