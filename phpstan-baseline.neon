@@ -1,16 +1,28 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to an undefined static method MaxieWright\\TrinidadAndTobagoAddresses\\Models\\City\:\:updateOrCreate\(\)\.$#'
-			identifier: staticMethod.notFound
+			message: '#^Property .full_location. does not exist in model\.$#'
+			identifier: rules.modelAppends
 			count: 1
-			path: database/seeders/CitySeeder.php
+			path: src/Models/City.php
 
 		-
-			message: '#^Call to an undefined static method MaxieWright\\TrinidadAndTobagoAddresses\\Models\\Division\:\:updateOrCreate\(\)\.$#'
-			identifier: staticMethod.notFound
+			message: '#^Property .island. does not exist in model\.$#'
+			identifier: rules.modelAppends
 			count: 1
-			path: database/seeders/DivisionSeeder.php
+			path: src/Models/City.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder<static\(MaxieWright\\TrinidadAndTobagoAddresses\\Models\\City\)>\:\:hasCoordinates\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Models/City.php
+
+		-
+			message: '#^Property .full_name. does not exist in model\.$#'
+			identifier: rules.modelAppends
+			count: 1
+			path: src/Models/Division.php
 
 		-
 			message: '#^Trait MaxieWright\\TrinidadAndTobagoAddresses\\Concerns\\HasTrinidadAndTobagoAddress is used zero times and is not analysed\.$#'

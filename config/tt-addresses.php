@@ -25,4 +25,14 @@ return [
     |
     */
     'country_code' => 'TT',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Country Name
+    |--------------------------------------------------------------------------
+    |
+    | Full country name used in formatted addresses.
+    |
+    */
+    'country_name' => 'Trinidad and Tobago',
 ];

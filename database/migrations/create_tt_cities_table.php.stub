@@ -19,10 +19,13 @@ return new class extends Migration
                   ->constrained($divisionsTable)
                   ->cascadeOnDelete();
             $table->string('name');
+            $table->decimal('latitude', 10, 7)->nullable();  // Precision for ~1cm accuracy
+            $table->decimal('longitude', 10, 7)->nullable();
             $table->timestamps();
 
             $table->index('division_id');
             $table->unique(['division_id', 'name']);
+            $table->index(['latitude', 'longitude']); // For spatial queries
         });
     }
 

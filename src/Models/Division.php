@@ -23,9 +23,12 @@ use MaxieWright\TrinidadAndTobagoAddresses\Enums\DivisionType;
  * @property DivisionType $type
  * @property string $abbreviation
  * @property string $island
+ * @property float|null $latitude
+ * @property float|null $longitude
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  * @property-read string $full_name
+ * @property-read array|null $coordinates
  * @property-read \Illuminate\Database\Eloquent\Collection<int, City> $cities
  */
 class Division extends Model
@@ -33,13 +36,15 @@ class Division extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'name',
         'type',
         'abbreviation',
         'island',
+        'latitude',
+        'longitude',
     ];
 
     protected $appends = [
@@ -53,6 +58,8 @@ class Division extends Model
      */
     protected $casts = [
         'type' => DivisionType::class,
+        'latitude' => 'float',
+        'longitude' => 'float',
     ];
 
     /**
@@ -146,5 +153,49 @@ class Division extends Model
         return Attribute::make(
             get: fn () => "{$this->name} ({$this->type->label()})",
         );
+    }
+
+    /**
+     * Get coordinates as an array [latitude, longitude].
+     */
+    public function coordinates(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->hasCoordinatesData()
+                ? ['latitude' => $this->latitude, 'longitude' => $this->longitude]
+                : null,
+        );
+    }
+
+    /**
+     * Check if this division has coordinate data.
+     */
+    public function hasCoordinatesData(): bool
+    {
+        return $this->latitude !== null && $this->longitude !== null;
+    }
+
+    /**
+     * Get the Google Maps URL for this division.
+     */
+    public function getGoogleMapsUrl(): ?string
+    {
+        if (! $this->hasCoordinatesData()) {
+            return null;
+        }
+
+        return "https://www.google.com/maps?q={$this->latitude},{$this->longitude}";
+    }
+
+    /**
+     * Get the OpenStreetMap URL for this division.
+     */
+    public function getOpenStreetMapUrl(): ?string
+    {
+        if (! $this->hasCoordinatesData()) {
+            return null;
+        }
+
+        return "https://www.openstreetmap.org/?mlat={$this->latitude}&mlon={$this->longitude}&zoom=12";
     }
 }
