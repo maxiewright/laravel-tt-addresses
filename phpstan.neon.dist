@@ -8,3 +8,7 @@ parameters:
         - config
         - database
     tmpDir: build/phpstan
+    ignoreErrors:
+        -
+            message: '#Trait MaxieWright\\TrinidadAndTobagoAddresses\\Concerns\\HasAddresses is used zero times and is not analysed.#'
+            path: src/Concerns/HasAddresses.php

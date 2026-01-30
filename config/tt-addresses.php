@@ -14,6 +14,38 @@ return [
     'tables' => [
         'divisions' => 'tt_divisions',
         'cities' => 'tt_cities',
+        'addresses' => 'tt_addresses',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Geocoding
+    |--------------------------------------------------------------------------
+    |
+    | Configure geocoding (address to coordinates). The Geocoder can be used
+    | standalone via the Geocoder facade or with the Address model.
+    |
+    | After publishing, you may use env(): TT_ADDRESSES_GEOCODING_ENABLED,
+    | TT_ADDRESSES_GEOCODING_DRIVER, TT_ADDRESSES_GEOCODING_QUEUE,
+    | GOOGLE_MAPS_API_KEY, APP_NAME (for Nominatim user_agent).
+    |
+    */
+    'geocoding' => [
+        'enabled' => false,
+        'driver' => 'null',
+        'queue' => true,
+        'cache' => [
+            'enabled' => true,
+            'ttl' => 60 * 60 * 24 * 30, // 30 days
+        ],
+        'drivers' => [
+            'google' => [
+                'api_key' => '',
+            ],
+            'nominatim' => [
+                'user_agent' => 'Laravel',
+            ],
+        ],
     ],
 
     /*

@@ -70,7 +70,8 @@
                 "MaxieWright\\TrinidadAndTobagoAddresses\\TrinidadAndTobagoAddressesServiceProvider"
             ],
             "aliases": {
-                "TrinidadAndTobagoAddresses": "MaxieWright\\TrinidadAndTobagoAddresses\\Facades\\TrinidadAndTobagoAddresses"
+                "TrinidadAndTobagoAddresses": "MaxieWright\\TrinidadAndTobagoAddresses\\Facades\\TrinidadAndTobagoAddresses",
+                "Geocoder": "MaxieWright\\TrinidadAndTobagoAddresses\\Facades\\Geocoder"
             }
         }
     },

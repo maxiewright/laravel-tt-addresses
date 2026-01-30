@@ -9,7 +9,7 @@ arch('models extend eloquent model')
     ->toExtend('Illuminate\Database\Eloquent\Model');
 
 arch('enums are backed by strings')
-    ->expect('MaxieWright\TrinidadAndTobagoAddresses\Enums\DivisionType')
+    ->expect('MaxieWright\TrinidadAndTobagoAddresses\Enums')
     ->toBeStringBackedEnum();
 
 arch('traits are traits')

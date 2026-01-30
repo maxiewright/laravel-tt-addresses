@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace MaxieWright\TrinidadAndTobagoAddresses;
 
+use MaxieWright\TrinidadAndTobagoAddresses\Contracts\Geocoder;
+use MaxieWright\TrinidadAndTobagoAddresses\Services\Geocoding\GoogleMapsGeocoder;
+use MaxieWright\TrinidadAndTobagoAddresses\Services\Geocoding\NominatimGeocoder;
+use MaxieWright\TrinidadAndTobagoAddresses\Services\Geocoding\NullGeocoder;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -50,6 +54,21 @@ class TrinidadAndTobagoAddressesServiceProvider extends PackageServiceProvider
         // Bind the package's main class into the container for the facade to resolve.
         $this->app->singleton('tt-addresses', function () {
             return new TrinidadAndTobagoAddresses;
+        });
+
+        $this->app->singleton(Geocoder::class, function ($app) {
+            $driver = config('tt-addresses.geocoding.driver', 'null');
+
+            return match ($driver) {
+                'google' => new GoogleMapsGeocoder(
+                    (string) config('tt-addresses.geocoding.drivers.google.api_key', '')
+                ),
+                'nominatim' => new NominatimGeocoder(
+                    (string) config('tt-addresses.geocoding.drivers.nominatim.user_agent', 'Laravel')
+                ),
+                'null' => new NullGeocoder,
+                default => new NullGeocoder,
+            };
         });
     }
 }
