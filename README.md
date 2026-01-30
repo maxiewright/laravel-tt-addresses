@@ -11,6 +11,7 @@ A Laravel package providing Trinidad and Tobago administrative divisions and cit
 - 🏛️ **15 Administrative Divisions** - All Regional Corporations, Boroughs, City Corporations, and Tobago
 - 🏘️ **500+ Cities/Towns/Villages** - Comprehensive coverage of Trinidad and Tobago communities
 - 🔗 **Eloquent Relationships** - Ready-to-use models with proper relationships
+- 📍 **Geolocation Support** - Latitude and longitude for cities with distance calculations
 - 🎨 **Filament Support** - Enums implement `HasLabel` for seamless Filament integration
 - ⚙️ **Configurable** - Customise table names to avoid conflicts
 - 🧪 **Tested** - Full test coverage with Pest
@@ -213,6 +214,63 @@ $customer->division->name;       // "Chaguanas"
 $customer->city->name;           // "Chaguanas"
 $customer->formatted_address;    // "123 Main Street, Chaguanas, Chaguanas"
 $customer->island;               // "Trinidad"
+```
+
+### Geolocation Features
+
+The package includes coordinates for cities, enabling location-based queries:
+```php
+use MaxieWright\TrinidadAndTobagoAddresses\Models\City;
+
+// Get coordinates
+$city = City::where('name', 'Port-of-Spain')->first();
+$city->latitude;    // 10.6596
+$city->longitude;   // -61.5086
+$city->coordinates; // ['latitude' => 10.6596, 'longitude' => -61.5086]
+
+// Calculate distance between cities (in kilometers)
+$pos = City::where('name', 'Port-of-Spain')->first();
+$sfo = City::where('name', 'San Fernando')->first();
+$distance = $pos->distanceTo($sfo); // ~47km
+
+// Find cities within 20km of a point
+$nearbyCities = City::query()
+    ->withinRadius(10.6596, -61.5086, 20)
+    ->get();
+
+// Find the nearest city to coordinates
+$nearest = City::findNearest(10.5, -61.4);
+
+// Order cities by distance from a point
+$cities = City::query()
+    ->orderByDistanceFrom(10.6596, -61.5086)
+    ->take(10)
+    ->get();
+
+// Get map URLs
+$city->getGoogleMapsUrl();      // https://www.google.com/maps?q=...
+$city->getOpenStreetMapUrl();   // https://www.openstreetmap.org/?mlat=...
+```
+
+#### Using with Address Models
+
+Models using `HasTrinidadAndTobagoAddress` automatically get location methods:
+```php
+$customer = Customer::find(1);
+
+// Get coordinates from associated city
+$customer->coordinates;  // ['latitude' => ..., 'longitude' => ...]
+$customer->latitude;
+$customer->longitude;
+
+// Check if has coordinates
+if ($customer->hasCoordinates()) {
+    // Calculate distance to another customer
+    $distance = $customer->distanceTo($otherCustomer);
+    
+    // Find nearby cities
+    $nearbyCities = $customer->findNearbyCities(radiusKm: 15, limit: 5);
+}
 ```
 
 ### Filament Integration

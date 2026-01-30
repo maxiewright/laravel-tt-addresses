@@ -18,10 +18,13 @@ return new class extends Migration
             $table->string('type');
             $table->string('abbreviation', 10)->unique();
             $table->string('island', 10)->default('Trinidad');
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
             $table->timestamps();
 
             $table->index('type');
             $table->index('island');
+            $table->index(['latitude', 'longitude']);
         });
     }
 
