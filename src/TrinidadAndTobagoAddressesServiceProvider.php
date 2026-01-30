@@ -27,6 +27,7 @@ class TrinidadAndTobagoAddressesServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasMigrations([
                 'create_tt_divisions_table',
+                'add_coordinates_to_tt_divisions_table', // For upgrades
                 'create_tt_cities_table',
                 'add_coordinates_to_tt_cities_table', // For upgrades
             ])
