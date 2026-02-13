@@ -30,7 +30,7 @@ class OptimizeSearchDataCommand extends Command
             $this->info('✅ Search caches warmed');
         }
 
-        if (!$this->option('clear-cache') && !$this->option('warm-cache')) {
+        if (! $this->option('clear-cache') && ! $this->option('warm-cache')) {
             // Default: clear then warm
             $this->info('🔄 Optimizing search caches...');
             $this->clearSearchCaches();
@@ -53,7 +53,7 @@ class OptimizeSearchDataCommand extends Command
 
         // Clear any search result caches (pattern-based)
         // Note: This is simplified - in production you might want more sophisticated cache clearing
-        $this->comment('   Cache keys cleared: ' . count($cacheKeys));
+        $this->comment('   Cache keys cleared: '.count($cacheKeys));
     }
 
     private function warmUpCaches(): void
@@ -79,9 +79,9 @@ class OptimizeSearchDataCommand extends Command
             ['Metric', 'Value'],
             [
                 ['Total Cities', number_format($totalCities)],
-                ['Cities with Coordinates', number_format($citiesWithCoordinates) . ' (' . round(($citiesWithCoordinates / max($totalCities, 1)) * 100, 1) . '%)'],
+                ['Cities with Coordinates', number_format($citiesWithCoordinates).' ('.round(($citiesWithCoordinates / max($totalCities, 1)) * 100, 1).'%)'],
                 ['Configured Popular Cities', count($popularCities)],
-                ['Cache TTL (Popular Cities)', config('tt-addresses.search.popular_cities_cache_ttl', 3600) . ' seconds'],
+                ['Cache TTL (Popular Cities)', config('tt-addresses.search.popular_cities_cache_ttl', 3600).' seconds'],
                 ['Autocomplete Limit', config('tt-addresses.search.autocomplete_limit', 10)],
             ]
         );

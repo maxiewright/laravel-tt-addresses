@@ -99,7 +99,7 @@ return [
     */
     'popular_cities' => [
         'Port of Spain',
-        'San Fernando', 
+        'San Fernando',
         'Chaguanas',
         'Arima',
         'Point Fortin',
