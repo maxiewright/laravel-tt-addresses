@@ -318,27 +318,27 @@ $popular = City::popular()->get();
 $popularCached = City::getPopularCached(ttl: 3600); // Cache for 1 hour
 ```
 
-#### Service Area Search
+#### Search Radius Filtering
 
 ```php
-use MaxieWright\TrinidadAndTobagoAddresses\Enums\ServiceRadius;
+use MaxieWright\TrinidadAndTobagoAddresses\Enums\SearchRadius;
 
-// Find cities within different service radii
-$walking = City::withinServiceArea($lat, $lng, ServiceRadius::WALKING)->get();     // 2km
-$driving = City::withinServiceArea($lat, $lng, ServiceRadius::DRIVING)->get();     // 10km  
-$regional = City::withinServiceArea($lat, $lng, ServiceRadius::REGIONAL)->get();   // 25km
-$islandWide = City::withinServiceArea($lat, $lng, ServiceRadius::ISLAND_WIDE)->get(); // 100km
+// Find cities within predefined search radii
+$walking = City::withinSearchRadius($lat, $lng, SearchRadius::WALKING)->get();     // 2km
+$driving = City::withinSearchRadius($lat, $lng, SearchRadius::DRIVING)->get();     // 10km  
+$regional = City::withinSearchRadius($lat, $lng, SearchRadius::REGIONAL)->get();   // 25km
+$islandWide = City::withinSearchRadius($lat, $lng, SearchRadius::ISLAND_WIDE)->get(); // 100km
 
-// Service radius labels for UI
-ServiceRadius::WALKING->label();      // "2 km (Walking Distance)"
-ServiceRadius::DRIVING->description(); // "Short drive, local area"
+// Search radius labels for UI
+SearchRadius::WALKING->label();      // "2 km (Walking Distance)"
+SearchRadius::DRIVING->description(); // "Short drive, local area"
 ```
 
-#### Provider Location Suggestions
+#### Nearby Location Suggestions
 
 ```php
-// Get suggested service cities for a provider based on their location
-$suggestions = City::getSuggestedServiceCities(
+// Get suggested nearby cities for any location
+$suggestions = City::getSuggestedNearbyCities(
     latitude: 10.6596,
     longitude: -61.5089, 
     maxCities: 10
