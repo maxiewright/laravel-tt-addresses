@@ -14,9 +14,9 @@ class SearchEnhancementsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-        
+
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+
         // Create test division
         $division = Division::create([
             'name' => 'Test Regional Corporation',
@@ -54,7 +54,7 @@ class SearchEnhancementsTest extends TestCase
     public function it_can_autocomplete_city_names()
     {
         $results = City::autocomplete('Port', 5)->get();
-        
+
         $this->assertCount(1, $results);
         $this->assertEquals('Port of Spain', $results->first()->name);
     }
@@ -63,9 +63,9 @@ class SearchEnhancementsTest extends TestCase
     public function it_can_get_popular_cities()
     {
         config(['tt-addresses.popular_cities' => ['Port of Spain', 'San Fernando', 'Chaguanas']]);
-        
+
         $results = City::popular()->get();
-        
+
         $this->assertGreaterThan(0, $results->count());
         $this->assertEquals('Port of Spain', $results->first()->name);
     }
@@ -75,9 +75,9 @@ class SearchEnhancementsTest extends TestCase
     {
         $portOfSpainLat = 10.6596;
         $portOfSpainLng = -61.5089;
-        
+
         $results = City::withinServiceArea($portOfSpainLat, $portOfSpainLng, ServiceRadius::REGIONAL)->get();
-        
+
         $this->assertGreaterThan(0, $results->count());
     }
 
@@ -86,7 +86,7 @@ class SearchEnhancementsTest extends TestCase
     {
         $city = City::with('division')->first();
         $result = $city->toSearchResult();
-        
+
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('full_location', $result);
@@ -99,7 +99,7 @@ class SearchEnhancementsTest extends TestCase
     {
         $city = City::with('division')->first();
         $option = $city->toAutocompleteOption();
-        
+
         $this->assertArrayHasKey('value', $option);
         $this->assertArrayHasKey('label', $option);
         $this->assertArrayHasKey('description', $option);
@@ -111,7 +111,7 @@ class SearchEnhancementsTest extends TestCase
     {
         $walking = ServiceRadius::WALKING;
         $driving = ServiceRadius::DRIVING;
-        
+
         $this->assertEquals(2, $walking->value);
         $this->assertEquals(10, $driving->value);
         $this->assertEquals('2 km (Walking Distance)', $walking->label());
@@ -123,9 +123,9 @@ class SearchEnhancementsTest extends TestCase
     {
         $portOfSpainLat = 10.6596;
         $portOfSpainLng = -61.5089;
-        
+
         $suggestions = City::getSuggestedServiceCities($portOfSpainLat, $portOfSpainLng, 5);
-        
+
         $this->assertLessThanOrEqual(5, $suggestions->count());
         $this->assertGreaterThan(0, $suggestions->count());
     }
@@ -134,13 +134,13 @@ class SearchEnhancementsTest extends TestCase
     public function it_can_cache_popular_cities()
     {
         config(['tt-addresses.popular_cities' => ['Port of Spain', 'San Fernando']]);
-        
+
         // First call - should cache
         $first = City::getPopularCached(60);
-        
+
         // Second call - should use cache
         $second = City::getPopularCached(60);
-        
+
         $this->assertEquals($first->count(), $second->count());
     }
 

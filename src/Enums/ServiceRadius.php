@@ -9,7 +9,7 @@ use Filament\Support\Contracts\HasLabel;
 enum ServiceRadius: int implements HasLabel
 {
     case WALKING = 2;      // 2km - walking distance
-    case DRIVING = 10;     // 10km - driving distance  
+    case DRIVING = 10;     // 10km - driving distance
     case REGIONAL = 25;    // 25km - regional coverage
     case ISLAND_WIDE = 100; // Full island coverage
 
@@ -32,7 +32,7 @@ enum ServiceRadius: int implements HasLabel
             self::ISLAND_WIDE => 'Anywhere on the island',
         };
     }
-    
+
     public function kilometers(): int
     {
         return $this->value;
