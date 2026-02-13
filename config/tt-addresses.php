@@ -67,4 +67,51 @@ return [
     |
     */
     'country_name' => 'Trinidad and Tobago',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Search Configuration
+    |--------------------------------------------------------------------------
+    */
+    'search' => [
+        'autocomplete_limit' => 10,
+        'cache_ttl' => 900, // 15 minutes
+        'popular_cities_cache_ttl' => 3600, // 1 hour
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Performance Configuration
+    |--------------------------------------------------------------------------
+    */
+    'performance' => [
+        'enable_query_caching' => env('TT_ADDRESSES_QUERY_CACHE', true),
+        'max_search_radius_km' => 100,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Popular Cities
+    |--------------------------------------------------------------------------
+    |
+    | List of major cities that should appear first in autocomplete/suggestions
+    |
+    */
+    'popular_cities' => [
+        'Port of Spain',
+        'San Fernando', 
+        'Chaguanas',
+        'Arima',
+        'Point Fortin',
+        'Couva',
+        'Sangre Grande',
+        'Tunapuna',
+        'Marabella',
+        'St. Joseph',
+        'Diego Martin',
+        'Penal',
+        'Rio Claro',
+        'Princes Town',
+        'Siparia',
+    ],
 ];

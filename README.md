@@ -273,6 +273,115 @@ if ($customer->hasCoordinates()) {
 }
 ```
 
+### Search Enhancements
+
+The package includes powerful search and autocomplete features designed for high-performance applications:
+
+#### Autocomplete Search
+
+```php
+use MaxieWright\TrinidadAndTobagoAddresses\Models\City;
+
+// Fast autocomplete search (optimized for prefix matching)
+$results = City::autocomplete('Port', limit: 5)->get();
+// Returns cities starting with "Port" (like "Port of Spain")
+
+// Convert to API format
+$searchResults = $results->map->toSearchResult();
+// [
+//   'id' => 1,
+//   'name' => 'Port of Spain',
+//   'division' => 'Port of Spain',
+//   'full_location' => 'Port of Spain, Port of Spain',
+//   'island' => 'Trinidad',
+//   'coordinates' => ['latitude' => 10.6596, 'longitude' => -61.5089],
+//   'division_type' => 'City Corporation'
+// ]
+
+// Convert to autocomplete options
+$options = $results->map->toAutocompleteOption();
+// [
+//   'value' => 1,
+//   'label' => 'Port of Spain', 
+//   'description' => 'Port of Spain, Trinidad',
+//   'coordinates' => ['latitude' => 10.6596, 'longitude' => -61.5089]
+// ]
+```
+
+#### Popular Cities
+
+```php
+// Get popular/major cities (configured in config file)
+$popular = City::popular()->get();
+
+// With caching (recommended for production)
+$popularCached = City::getPopularCached(ttl: 3600); // Cache for 1 hour
+```
+
+#### Service Area Search
+
+```php
+use MaxieWright\TrinidadAndTobagoAddresses\Enums\ServiceRadius;
+
+// Find cities within different service radii
+$walking = City::withinServiceArea($lat, $lng, ServiceRadius::WALKING)->get();     // 2km
+$driving = City::withinServiceArea($lat, $lng, ServiceRadius::DRIVING)->get();     // 10km  
+$regional = City::withinServiceArea($lat, $lng, ServiceRadius::REGIONAL)->get();   // 25km
+$islandWide = City::withinServiceArea($lat, $lng, ServiceRadius::ISLAND_WIDE)->get(); // 100km
+
+// Service radius labels for UI
+ServiceRadius::WALKING->label();      // "2 km (Walking Distance)"
+ServiceRadius::DRIVING->description(); // "Short drive, local area"
+```
+
+#### Provider Location Suggestions
+
+```php
+// Get suggested service cities for a provider based on their location
+$suggestions = City::getSuggestedServiceCities(
+    latitude: 10.6596,
+    longitude: -61.5089, 
+    maxCities: 10
+);
+```
+
+#### Performance Optimization
+
+```php
+// Clear and warm search caches
+php artisan tt-addresses:optimize-search --clear-cache --warm-cache
+
+// Or just optimize (clear + warm)
+php artisan tt-addresses:optimize-search
+```
+
+### Configuration for Search
+
+Update your `config/tt-addresses.php` for search optimization:
+
+```php
+return [
+    // ... existing config ...
+    
+    'search' => [
+        'autocomplete_limit' => 10,           // Max results for autocomplete
+        'cache_ttl' => 900,                   // 15 minutes
+        'popular_cities_cache_ttl' => 3600,   // 1 hour
+    ],
+    
+    'popular_cities' => [
+        'Port of Spain',
+        'San Fernando', 
+        'Chaguanas',
+        'Arima',
+        'Point Fortin',
+        'Couva',
+        'Sangre Grande',
+        // ... add your most searched cities
+    ],
+];
+```
+
 ### Filament Integration
 
 The models and enums are designed to work seamlessly with [FilamentPHP](https://filamentphp.com/).

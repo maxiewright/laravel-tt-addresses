@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use MaxieWright\TrinidadAndTobagoAddresses\Enums\ServiceRadius;
 
 /**
  * City/Town/Village Model
@@ -125,6 +126,65 @@ class City extends Model
         )->orderBy('distance', $direction);
     }
 
+    /**
+     * Scope for autocomplete/typeahead search with optimized results.
+     */
+    #[Scope]
+    public function autocomplete(Builder $query, string $search, int $limit = 10): void
+    {
+        $query->where(function (Builder $q) use ($search) {
+            $q->where('name', 'like', $search . '%')  // Prefix match is faster
+              ->orWhere('name', 'like', '% ' . $search . '%');  // Word boundary match
+        })
+        ->hasCoordinates()
+        ->orderByRaw("
+            CASE 
+                WHEN name LIKE ? THEN 1 
+                WHEN name LIKE ? THEN 2 
+                ELSE 3 
+            END, name
+        ", [$search . '%', '% ' . $search . '%'])
+        ->limit($limit);
+    }
+
+    /**
+     * Scope for popular/major cities (for default suggestions).
+     */
+    #[Scope]
+    public function popular(Builder $query): void
+    {
+        $popularCities = config('tt-addresses.popular_cities', [
+            'Port of Spain', 'San Fernando', 'Chaguanas', 'Arima', 'Point Fortin',
+            'Couva', 'Sangre Grande', 'Tunapuna', 'Marabella', 'St. Joseph'
+        ]);
+        
+        $query->whereIn('name', $popularCities)
+              ->hasCoordinates()
+              ->orderByRaw("FIELD(name, '" . implode("','", $popularCities) . "')");
+    }
+
+    /**
+     * Scope cities by island with distance from point.
+     */
+    #[Scope]
+    public function byIslandDistance(Builder $query, float $latitude, float $longitude, ?string $island = null): void
+    {
+        if ($island) {
+            $query->whereHas('division', fn (Builder $q) => $q->where('island', $island));
+        }
+        
+        $query->orderByDistanceFrom($latitude, $longitude);
+    }
+
+    /**
+     * Scope cities that serve a specific service area preference.
+     */
+    #[Scope]
+    public function withinServiceArea(Builder $query, float $latitude, float $longitude, ServiceRadius $radius): void
+    {
+        $query->withinRadius($latitude, $longitude, $radius->value);
+    }
+
     /* ───────────────────────────────────────────────────────────
      * Accessors
      * ─────────────────────────────────────────────────────────── */
@@ -175,6 +235,58 @@ class City extends Model
     public function hasCoordinatesData(): bool
     {
         return $this->latitude !== null && $this->longitude !== null;
+    }
+
+    /**
+     * Convert to search result format for APIs.
+     */
+    public function toSearchResult(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'division' => $this->division->name,
+            'full_location' => $this->full_location,
+            'island' => $this->island,
+            'coordinates' => $this->coordinates,
+            'division_type' => $this->division->type->label(),
+        ];
+    }
+
+    /**
+     * Convert to autocomplete option format.
+     */
+    public function toAutocompleteOption(): array
+    {
+        return [
+            'value' => $this->id,
+            'label' => $this->name,
+            'description' => $this->division->name . ', ' . $this->island,
+            'coordinates' => $this->coordinates,
+        ];
+    }
+
+    /**
+     * Get suggested cities for a provider based on their location.
+     */
+    public static function getSuggestedServiceCities(float $latitude, float $longitude, int $maxCities = 10): Collection
+    {
+        return static::query()
+            ->hasCoordinates()
+            ->withinRadius($latitude, $longitude, 50) // 50km max
+            ->orderByDistanceFrom($latitude, $longitude)
+            ->limit($maxCities)
+            ->get();
+    }
+
+    /**
+     * Get popular cities with caching.
+     */
+    public static function getPopularCached(int $ttl = 3600): Collection
+    {
+        return cache()->remember('tt_addresses.popular_cities', $ttl, function () {
+            return static::popular()->get();
+        });
     }
 
     /**
