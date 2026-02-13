@@ -6,7 +6,7 @@ namespace MaxieWright\TrinidadAndTobagoAddresses\Enums;
 
 use Filament\Support\Contracts\HasLabel;
 
-enum ServiceRadius: int implements HasLabel
+enum SearchRadius: int implements HasLabel
 {
     case WALKING = 2;      // 2km - walking distance
     case DRIVING = 10;     // 10km - driving distance
@@ -26,7 +26,7 @@ enum ServiceRadius: int implements HasLabel
     public function description(): string
     {
         return match ($this) {
-            self::WALKING => 'Services you can walk to',
+            self::WALKING => 'Short distance, walkable',
             self::DRIVING => 'Short drive, local area',
             self::REGIONAL => 'Extended regional coverage',
             self::ISLAND_WIDE => 'Anywhere on the island',
