@@ -1,5 +1,34 @@
 # Changelog
 
+## v0.2.0 — Search Enhancements for High-Performance Applications - 2026-02-13
+
+### Added
+
+- **Autocomplete Search**: Fast prefix-matching with `City::autocomplete()` scope
+- **Popular Cities**: Configurable list of major cities with `City::popular()` scope and caching
+- **Service Radius Enum**: Predefined distance ranges (`WALKING`, `DRIVING`, `REGIONAL`, `ISLAND_WIDE`)
+- **Service Area Filtering**: `City::withinServiceArea()` scope with ServiceRadius integration
+- **API Response Helpers**: `toSearchResult()` and `toAutocompleteOption()` methods
+- **Provider Location Suggestions**: `getSuggestedServiceCities()` for proximity-based recommendations
+- **Performance Optimization Command**: `tt-addresses:optimize-search` for cache management
+- **Enhanced Configuration**: Search settings, performance options, and popular cities list
+
+### Improved
+
+- **Search Performance**: Optimized queries with proper indexing suggestions
+- **Caching Strategy**: Built-in cache management for popular searches
+- **Documentation**: Comprehensive search feature documentation with examples
+
+### Technical Details
+
+- New `ServiceRadius` enum with Filament `HasLabel` support
+- Enhanced `City` model with 6 new scopes and helper methods
+- Performance-focused database query optimization
+- Comprehensive test coverage for new features
+- Cache-aware popular cities functionality
+
+**Perfect for:** Service provider platforms, location-based applications, and any system requiring fast Trinidad & Tobago location search.
+
 ## Initial release: Trinidad & Tobago divisions, 500+ cities, models, seeders, install command - 2025-12-17
 
 ### v0.1.0 — Initial release
