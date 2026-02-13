@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MaxieWright\TrinidadAndTobagoAddresses\Tests;
 
-use MaxieWright\TrinidadAndTobagoAddresses\Enums\ServiceRadius;
+use MaxieWright\TrinidadAndTobagoAddresses\Enums\SearchRadius;
 use MaxieWright\TrinidadAndTobagoAddresses\Models\City;
 use MaxieWright\TrinidadAndTobagoAddresses\Models\Division;
 use Orchestra\Testbench\TestCase;
@@ -71,13 +71,13 @@ class SearchEnhancementsTest extends TestCase
     }
 
     /** @test */
-    public function it_can_find_cities_within_service_area()
+    public function it_can_find_cities_within_search_radius()
     {
         $portOfSpainLat = 10.6596;
         $portOfSpainLng = -61.5089;
-
-        $results = City::withinServiceArea($portOfSpainLat, $portOfSpainLng, ServiceRadius::REGIONAL)->get();
-
+        
+        $results = City::withinSearchRadius($portOfSpainLat, $portOfSpainLng, SearchRadius::REGIONAL)->get();
+        
         $this->assertGreaterThan(0, $results->count());
     }
 
@@ -107,11 +107,11 @@ class SearchEnhancementsTest extends TestCase
     }
 
     /** @test */
-    public function service_radius_enum_works_correctly()
+    public function search_radius_enum_works_correctly()
     {
-        $walking = ServiceRadius::WALKING;
-        $driving = ServiceRadius::DRIVING;
-
+        $walking = SearchRadius::WALKING;
+        $driving = SearchRadius::DRIVING;
+        
         $this->assertEquals(2, $walking->value);
         $this->assertEquals(10, $driving->value);
         $this->assertEquals('2 km (Walking Distance)', $walking->label());
@@ -119,13 +119,13 @@ class SearchEnhancementsTest extends TestCase
     }
 
     /** @test */
-    public function it_can_get_suggested_service_cities()
+    public function it_can_get_suggested_nearby_cities()
     {
         $portOfSpainLat = 10.6596;
         $portOfSpainLng = -61.5089;
-
-        $suggestions = City::getSuggestedServiceCities($portOfSpainLat, $portOfSpainLng, 5);
-
+        
+        $suggestions = City::getSuggestedNearbyCities($portOfSpainLat, $portOfSpainLng, 5);
+        
         $this->assertLessThanOrEqual(5, $suggestions->count());
         $this->assertGreaterThan(0, $suggestions->count());
     }

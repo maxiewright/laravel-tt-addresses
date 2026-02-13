@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use MaxieWright\TrinidadAndTobagoAddresses\Enums\ServiceRadius;
+use MaxieWright\TrinidadAndTobagoAddresses\Enums\SearchRadius;
 
 /**
  * City/Town/Village Model
@@ -177,10 +177,10 @@ class City extends Model
     }
 
     /**
-     * Scope cities that serve a specific service area preference.
+     * Scope cities within a predefined search radius.
      */
     #[Scope]
-    public function withinServiceArea(Builder $query, float $latitude, float $longitude, ServiceRadius $radius): void
+    public function withinSearchRadius(Builder $query, float $latitude, float $longitude, SearchRadius $radius): void
     {
         $query->withinRadius($latitude, $longitude, $radius->value);
     }
@@ -267,9 +267,9 @@ class City extends Model
     }
 
     /**
-     * Get suggested cities for a provider based on their location.
+     * Get suggested cities near a given location.
      */
-    public static function getSuggestedServiceCities(float $latitude, float $longitude, int $maxCities = 10): Collection
+    public static function getSuggestedNearbyCities(float $latitude, float $longitude, int $maxCities = 10): Collection
     {
         return static::query()
             ->hasCoordinates()
