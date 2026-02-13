@@ -133,18 +133,18 @@ class City extends Model
     public function autocomplete(Builder $query, string $search, int $limit = 10): void
     {
         $query->where(function (Builder $q) use ($search) {
-            $q->where('name', 'like', $search . '%')  // Prefix match is faster
-              ->orWhere('name', 'like', '% ' . $search . '%');  // Word boundary match
+            $q->where('name', 'like', $search.'%')  // Prefix match is faster
+                ->orWhere('name', 'like', '% '.$search.'%');  // Word boundary match
         })
-        ->hasCoordinates()
-        ->orderByRaw("
+            ->hasCoordinates()
+            ->orderByRaw('
             CASE 
                 WHEN name LIKE ? THEN 1 
                 WHEN name LIKE ? THEN 2 
                 ELSE 3 
             END, name
-        ", [$search . '%', '% ' . $search . '%'])
-        ->limit($limit);
+        ', [$search.'%', '% '.$search.'%'])
+            ->limit($limit);
     }
 
     /**
@@ -155,12 +155,12 @@ class City extends Model
     {
         $popularCities = config('tt-addresses.popular_cities', [
             'Port of Spain', 'San Fernando', 'Chaguanas', 'Arima', 'Point Fortin',
-            'Couva', 'Sangre Grande', 'Tunapuna', 'Marabella', 'St. Joseph'
+            'Couva', 'Sangre Grande', 'Tunapuna', 'Marabella', 'St. Joseph',
         ]);
-        
+
         $query->whereIn('name', $popularCities)
-              ->hasCoordinates()
-              ->orderByRaw("FIELD(name, '" . implode("','", $popularCities) . "')");
+            ->hasCoordinates()
+            ->orderByRaw("FIELD(name, '".implode("','", $popularCities)."')");
     }
 
     /**
@@ -172,7 +172,7 @@ class City extends Model
         if ($island) {
             $query->whereHas('division', fn (Builder $q) => $q->where('island', $island));
         }
-        
+
         $query->orderByDistanceFrom($latitude, $longitude);
     }
 
@@ -261,7 +261,7 @@ class City extends Model
         return [
             'value' => $this->id,
             'label' => $this->name,
-            'description' => $this->division->name . ', ' . $this->island,
+            'description' => $this->division->name.', '.$this->island,
             'coordinates' => $this->coordinates,
         ];
     }
