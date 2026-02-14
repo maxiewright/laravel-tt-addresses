@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace MaxieWright\TrinidadAndTobagoAddresses\Enums;
 
-use Filament\Support\Contracts\HasLabel;
-
-enum SearchRadius: int implements HasLabel
+enum SearchRadius: string
 {
-    case WALKING = 2;      // 2km - walking distance
-    case DRIVING = 10;     // 10km - driving distance
-    case REGIONAL = 25;    // 25km - regional coverage
-    case ISLAND_WIDE = 100; // Full island coverage
+    case WALKING = '2';      // 2km - walking distance
+    case DRIVING = '10';     // 10km - driving distance
+    case REGIONAL = '25';    // 25km - regional coverage
+    case ISLAND_WIDE = '100'; // Full island coverage
 
     public function label(): string
     {
@@ -35,6 +33,14 @@ enum SearchRadius: int implements HasLabel
 
     public function kilometers(): int
     {
-        return $this->value;
+        return (int) $this->value;
+    }
+
+    /**
+     * Filament HasLabel support.
+     */
+    public function getLabel(): string
+    {
+        return $this->label();
     }
 }
