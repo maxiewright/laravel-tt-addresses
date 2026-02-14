@@ -75,9 +75,9 @@ class SearchEnhancementsTest extends TestCase
     {
         $portOfSpainLat = 10.6596;
         $portOfSpainLng = -61.5089;
-        
+
         $results = City::withinSearchRadius($portOfSpainLat, $portOfSpainLng, SearchRadius::REGIONAL)->get();
-        
+
         $this->assertGreaterThan(0, $results->count());
     }
 
@@ -111,7 +111,7 @@ class SearchEnhancementsTest extends TestCase
     {
         $walking = SearchRadius::WALKING;
         $driving = SearchRadius::DRIVING;
-        
+
         $this->assertEquals(2, $walking->value);
         $this->assertEquals(10, $driving->value);
         $this->assertEquals('2 km (Walking Distance)', $walking->label());
@@ -123,9 +123,9 @@ class SearchEnhancementsTest extends TestCase
     {
         $portOfSpainLat = 10.6596;
         $portOfSpainLng = -61.5089;
-        
+
         $suggestions = City::getSuggestedNearbyCities($portOfSpainLat, $portOfSpainLng, 5);
-        
+
         $this->assertLessThanOrEqual(5, $suggestions->count());
         $this->assertGreaterThan(0, $suggestions->count());
     }
