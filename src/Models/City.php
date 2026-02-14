@@ -138,10 +138,10 @@ class City extends Model
         })
             ->hasCoordinates()
             ->orderByRaw('
-            CASE 
-                WHEN name LIKE ? THEN 1 
-                WHEN name LIKE ? THEN 2 
-                ELSE 3 
+            CASE
+                WHEN name LIKE ? THEN 1
+                WHEN name LIKE ? THEN 2
+                ELSE 3
             END, name
         ', [$search.'%', '% '.$search.'%'])
             ->limit($limit);
@@ -158,9 +158,18 @@ class City extends Model
             'Couva', 'Sangre Grande', 'Tunapuna', 'Marabella', 'St. Joseph',
         ]);
 
+        // Portable ordering for SQLite/MySQL/Postgres using CASE expression
+        $caseParts = [];
+        $bindings = [];
+        foreach ($popularCities as $index => $cityName) {
+            $caseParts[] = 'WHEN name = ? THEN '.($index + 1);
+            $bindings[] = $cityName;
+        }
+        $caseSql = 'CASE '.implode(' ', $caseParts).' ELSE 999 END';
+
         $query->whereIn('name', $popularCities)
             ->hasCoordinates()
-            ->orderByRaw("FIELD(name, '".implode("','", $popularCities)."')");
+            ->orderByRaw($caseSql, $bindings);
     }
 
     /**
@@ -182,7 +191,7 @@ class City extends Model
     #[Scope]
     public function withinSearchRadius(Builder $query, float $latitude, float $longitude, SearchRadius $radius): void
     {
-        $query->withinRadius($latitude, $longitude, $radius->value);
+        $query->withinRadius($latitude, $longitude, $radius->kilometers());
     }
 
     /* ───────────────────────────────────────────────────────────
@@ -285,7 +294,7 @@ class City extends Model
     public static function getPopularCached(int $ttl = 3600): Collection
     {
         return cache()->remember('tt_addresses.popular_cities', $ttl, function () {
-            return static::popular()->get();
+            return static::query()->popular()->get();
         });
     }
 

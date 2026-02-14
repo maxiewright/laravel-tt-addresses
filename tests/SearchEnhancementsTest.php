@@ -2,162 +2,118 @@
 
 declare(strict_types=1);
 
-namespace MaxieWright\TrinidadAndTobagoAddresses\Tests;
-
+use Illuminate\Support\Facades\Cache;
+use MaxieWright\TrinidadAndTobagoAddresses\Enums\DivisionType;
 use MaxieWright\TrinidadAndTobagoAddresses\Enums\SearchRadius;
 use MaxieWright\TrinidadAndTobagoAddresses\Models\City;
 use MaxieWright\TrinidadAndTobagoAddresses\Models\Division;
-use Orchestra\Testbench\TestCase;
 
-class SearchEnhancementsTest extends TestCase
-{
-    protected function setUp(): void
-    {
-        parent::setUp();
+beforeEach(function () {
+    // Ensure a clean cache for each test
+    Cache::flush();
 
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+    // Create test division
+    $division = Division::create([
+        'name' => 'Test Regional Corporation',
+        'type' => DivisionType::RegionalCorporation,
+        'abbreviation' => 'TRC',
+        'island' => 'Trinidad',
+        'latitude' => 10.5,
+        'longitude' => -61.5,
+    ]);
 
-        // Create test division
-        $division = Division::create([
-            'name' => 'Test Regional Corporation',
-            'type' => 'Regional Corporation',
-            'abbreviation' => 'TRC',
-            'island' => 'Trinidad',
-            'latitude' => 10.5,
-            'longitude' => -61.5,
-        ]);
+    // Create test cities
+    City::create([
+        'division_id' => $division->id,
+        'name' => 'Port of Spain',
+        'latitude' => 10.6596,
+        'longitude' => -61.5089,
+    ]);
 
-        // Create test cities
-        City::create([
-            'division_id' => $division->id,
-            'name' => 'Port of Spain',
-            'latitude' => 10.6596,
-            'longitude' => -61.5089,
-        ]);
+    City::create([
+        'division_id' => $division->id,
+        'name' => 'San Fernando',
+        'latitude' => 10.2759,
+        'longitude' => -61.4616,
+    ]);
 
-        City::create([
-            'division_id' => $division->id,
-            'name' => 'San Fernando',
-            'latitude' => 10.2759,
-            'longitude' => -61.4616,
-        ]);
+    City::create([
+        'division_id' => $division->id,
+        'name' => 'Chaguanas',
+        'latitude' => 10.5186,
+        'longitude' => -61.4107,
+    ]);
+});
 
-        City::create([
-            'division_id' => $division->id,
-            'name' => 'Chaguanas',
-            'latitude' => 10.5186,
-            'longitude' => -61.4107,
-        ]);
-    }
+it('can autocomplete city names', function () {
+    $results = City::query()->autocomplete('Port', 5)->get();
 
-    /** @test */
-    public function it_can_autocomplete_city_names()
-    {
-        $results = City::autocomplete('Port', 5)->get();
+    expect($results)->toHaveCount(1);
+    expect($results->first()->name)->toBe('Port of Spain');
+});
 
-        $this->assertCount(1, $results);
-        $this->assertEquals('Port of Spain', $results->first()->name);
-    }
+it('can get popular cities', function () {
+    config(['tt-addresses.popular_cities' => ['Port of Spain', 'San Fernando', 'Chaguanas']]);
 
-    /** @test */
-    public function it_can_get_popular_cities()
-    {
-        config(['tt-addresses.popular_cities' => ['Port of Spain', 'San Fernando', 'Chaguanas']]);
+    $results = City::query()->popular()->get();
 
-        $results = City::popular()->get();
+    expect($results->count())->toBeGreaterThan(0);
+    expect($results->first()->name)->toBe('Port of Spain');
+});
 
-        $this->assertGreaterThan(0, $results->count());
-        $this->assertEquals('Port of Spain', $results->first()->name);
-    }
+it('can find cities within search radius', function () {
+    $portOfSpainLat = 10.6596;
+    $portOfSpainLng = -61.5089;
 
-    /** @test */
-    public function it_can_find_cities_within_search_radius()
-    {
-        $portOfSpainLat = 10.6596;
-        $portOfSpainLng = -61.5089;
+    $results = City::query()->withinSearchRadius($portOfSpainLat, $portOfSpainLng, SearchRadius::REGIONAL)->get();
 
-        $results = City::withinSearchRadius($portOfSpainLat, $portOfSpainLng, SearchRadius::REGIONAL)->get();
+    expect($results->count())->toBeGreaterThan(0);
+});
 
-        $this->assertGreaterThan(0, $results->count());
-    }
+it('can convert city to search result', function () {
+    $city = City::with('division')->first();
+    $result = $city->toSearchResult();
 
-    /** @test */
-    public function it_can_convert_city_to_search_result()
-    {
-        $city = City::with('division')->first();
-        $result = $city->toSearchResult();
+    expect($result)->toBeArray()
+        ->toHaveKeys(['id', 'name', 'full_location', 'coordinates', 'division_type']);
+});
 
-        $this->assertArrayHasKey('id', $result);
-        $this->assertArrayHasKey('name', $result);
-        $this->assertArrayHasKey('full_location', $result);
-        $this->assertArrayHasKey('coordinates', $result);
-        $this->assertArrayHasKey('division_type', $result);
-    }
+it('can convert city to autocomplete option', function () {
+    $city = City::with('division')->first();
+    $option = $city->toAutocompleteOption();
 
-    /** @test */
-    public function it_can_convert_city_to_autocomplete_option()
-    {
-        $city = City::with('division')->first();
-        $option = $city->toAutocompleteOption();
+    expect($option)->toBeArray()
+        ->toHaveKeys(['value', 'label', 'description', 'coordinates']);
+});
 
-        $this->assertArrayHasKey('value', $option);
-        $this->assertArrayHasKey('label', $option);
-        $this->assertArrayHasKey('description', $option);
-        $this->assertArrayHasKey('coordinates', $option);
-    }
+it('validates the SearchRadius enum', function () {
+    $walking = SearchRadius::WALKING;
+    $driving = SearchRadius::DRIVING;
 
-    /** @test */
-    public function search_radius_enum_works_correctly()
-    {
-        $walking = SearchRadius::WALKING;
-        $driving = SearchRadius::DRIVING;
+    expect($walking->kilometers())->toBe(2);
+    expect($driving->kilometers())->toBe(10);
+    expect($walking->label())->toBe('2 km (Walking Distance)');
+    expect($driving->label())->toBe('10 km (Driving Distance)');
+});
 
-        $this->assertEquals(2, $walking->value);
-        $this->assertEquals(10, $driving->value);
-        $this->assertEquals('2 km (Walking Distance)', $walking->label());
-        $this->assertEquals('10 km (Driving Distance)', $driving->label());
-    }
+it('can get suggested nearby cities', function () {
+    $portOfSpainLat = 10.6596;
+    $portOfSpainLng = -61.5089;
 
-    /** @test */
-    public function it_can_get_suggested_nearby_cities()
-    {
-        $portOfSpainLat = 10.6596;
-        $portOfSpainLng = -61.5089;
+    $suggestions = City::getSuggestedNearbyCities($portOfSpainLat, $portOfSpainLng, 5);
 
-        $suggestions = City::getSuggestedNearbyCities($portOfSpainLat, $portOfSpainLng, 5);
+    expect($suggestions->count())->toBeLessThanOrEqual(5)
+        ->and($suggestions->count())->toBeGreaterThan(0);
+});
 
-        $this->assertLessThanOrEqual(5, $suggestions->count());
-        $this->assertGreaterThan(0, $suggestions->count());
-    }
+it('can cache popular cities', function () {
+    config(['tt-addresses.popular_cities' => ['Port of Spain', 'San Fernando']]);
 
-    /** @test */
-    public function it_can_cache_popular_cities()
-    {
-        config(['tt-addresses.popular_cities' => ['Port of Spain', 'San Fernando']]);
+    // First call - should cache
+    $first = City::getPopularCached(60);
 
-        // First call - should cache
-        $first = City::getPopularCached(60);
+    // Second call - should use cache
+    $second = City::getPopularCached(60);
 
-        // Second call - should use cache
-        $second = City::getPopularCached(60);
-
-        $this->assertEquals($first->count(), $second->count());
-    }
-
-    protected function getPackageProviders($app)
-    {
-        return [
-            \MaxieWright\TrinidadAndTobagoAddresses\TrinidadAndTobagoAddressesServiceProvider::class,
-        ];
-    }
-
-    protected function defineEnvironment($app)
-    {
-        $app['config']->set('database.default', 'testing');
-        $app['config']->set('database.connections.testing', [
-            'driver' => 'sqlite',
-            'database' => ':memory:',
-            'prefix' => '',
-        ]);
-    }
-}
+    expect($second->count())->toBe($first->count());
+});
