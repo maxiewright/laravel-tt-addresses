@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Cache;
-use MaxieWright\TrinidadAndTobagoAddresses\Enums\SearchRadius;
 use MaxieWright\TrinidadAndTobagoAddresses\Enums\DivisionType;
+use MaxieWright\TrinidadAndTobagoAddresses\Enums\SearchRadius;
 use MaxieWright\TrinidadAndTobagoAddresses\Models\City;
 use MaxieWright\TrinidadAndTobagoAddresses\Models\Division;
 
