@@ -79,7 +79,7 @@ class OptimizeSearchDataCommand extends Command
             ['Metric', 'Value'],
             [
                 ['Total Cities', number_format($totalCities)],
-                ['Cities with Coordinates', number_format($citiesWithCoordinates).' ('.round(($citiesWithCoordinates / max($totalCities, 1)) * 100, 1).'%)'],
+                ['Cities with Coordinates', number_format($citiesWithCoordinates).' ('.($totalCities > 0 ? round(($citiesWithCoordinates / $totalCities) * 100, 1) : 0).'%)'],
                 ['Configured Popular Cities', count($popularCities)],
                 ['Cache TTL (Popular Cities)', config('tt-addresses.search.popular_cities_cache_ttl', 3600).' seconds'],
                 ['Autocomplete Limit', config('tt-addresses.search.autocomplete_limit', 10)],
