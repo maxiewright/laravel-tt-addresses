@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased (suggested v0.3.1)
+
+### Fixed
+
+- Resolve seeded communities' divisions by abbreviation at run time, so reseeding works when division IDs have gaps or have changed (including on PostgreSQL).
+- Fail before inserting any community if a required division is missing.
+- Correct README examples to look up division and city IDs rather than assume fixed values.
+- Publish only the create-table migrations for a fresh install; the coordinate columns are already in those tables.
+- Keep the optional coordinate migrations in the package for manual upgrades of older tables that lack those columns.
+- Correct the documented manual publish tags so fresh installs can publish config and migrations.
+
+### Compatibility note
+
+- `CitySeeder::getCities()` remains protected and overridable, but returned rows now use `division` (abbreviation) instead of `division_id` (number). Subclasses returning the old numeric shape must update their rows; the seeder rejects that shape rather than risk attaching communities to the wrong division.
+
 ## v0.2.0 — Search Enhancements for High-Performance Applications - 2026-02-13
 
 ### Added

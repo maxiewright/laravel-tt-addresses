@@ -37,10 +37,10 @@ composer format
 ### Package Installation & Setup
 ```bash
 # Publish migrations
-php artisan vendor:publish --tag="laravel-tt-addresses-migrations"
+php artisan vendor:publish --tag="tt-addresses-migrations"
 
 # Publish config
-php artisan vendor:publish --tag="laravel-tt-addresses-config"
+php artisan vendor:publish --tag="tt-addresses-config"
 
 # Run migrations
 php artisan migrate

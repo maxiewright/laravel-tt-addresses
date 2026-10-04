@@ -48,10 +48,10 @@ If you prefer to install manually:
 
 ```bash
 # Publish the config file
-php artisan vendor:publish --tag="laravel-tt-addresses-config"
+php artisan vendor:publish --tag="tt-addresses-config"
 
 # Publish the migrations
-php artisan vendor:publish --tag="laravel-tt-addresses-migrations"
+php artisan vendor:publish --tag="tt-addresses-migrations"
 
 # Run migrations
 php artisan migrate
@@ -81,6 +81,16 @@ public function run(): void
     ]);
 }
 ```
+
+`CitySeeder` resolves each community's division abbreviation against the divisions table when it runs, so division IDs do not have to start at 1. Run `DivisionSeeder` first; `CitySeeder` fails with a clear message if a required abbreviation is missing. Both seeders can be run again without creating duplicate rows, and a repeat city seed updates coordinates.
+
+If you extend `CitySeeder`, keep `getCities()` protected and return rows with `name`, `division` (an abbreviation such as `DMN`), `latitude`, and `longitude`. For example:
+
+```php
+['name' => 'Chaguaramas', 'division' => 'DMN', 'latitude' => 10.6833, 'longitude' => -61.6333]
+```
+
+The old `division_id` row format is no longer accepted because it can attach communities to the wrong division after IDs change.
 
 ## Configuration
 
@@ -190,11 +200,11 @@ Schema::create('customers', function (Blueprint $table) {
     $table->string('address_line_2')->nullable();
     $table->foreignId('division_id')
           ->nullable()
-          ->constrained(config('laravel-tt-addresses.tables.divisions'))
+          ->constrained(config('tt-addresses.tables.divisions'))
           ->nullOnDelete();
     $table->foreignId('city_id')
           ->nullable()
-          ->constrained(config('laravel-tt-addresses.tables.cities'))
+          ->constrained(config('tt-addresses.tables.cities'))
           ->nullOnDelete();
     $table->timestamps();
 });
@@ -203,11 +213,14 @@ Schema::create('customers', function (Blueprint $table) {
 Then use it:
 
 ```php
+$division = Division::where('abbreviation', 'CHA')->firstOrFail();
+$city = $division->cities()->where('name', 'Chaguanas')->firstOrFail();
+
 $customer = Customer::create([
     'name' => 'John Doe',
     'address_line_1' => '123 Main Street',
-    'division_id' => 11, // Chaguanas
-    'city_id' => 88,     // Chaguanas city
+    'division_id' => $division->id,
+    'city_id' => $city->id,
 ]);
 
 $customer->division->name;       // "Chaguanas"
@@ -289,7 +302,7 @@ $results = City::autocomplete('Port', limit: 5)->get();
 // Convert to API format
 $searchResults = $results->map->toSearchResult();
 // [
-//   'id' => 1,
+//   'id' => $city->id,
 //   'name' => 'Port of Spain',
 //   'division' => 'Port of Spain',
 //   'full_location' => 'Port of Spain, Port of Spain',
@@ -301,7 +314,7 @@ $searchResults = $results->map->toSearchResult();
 // Convert to autocomplete options
 $options = $results->map->toAutocompleteOption();
 // [
-//   'value' => 1,
+//   'value' => $city->id,
 //   'label' => 'Port of Spain', 
 //   'description' => 'Port of Spain, Trinidad',
 //   'coordinates' => ['latitude' => 10.6596, 'longitude' => -61.5089]
@@ -428,23 +441,23 @@ SelectFilter::make('type')
 
 ### Administrative Divisions Reference
 
-| ID | Name | Type | Abbreviation |
-|----|------|------|--------------|
-| 1 | Couva/Tabaquite/Talparo | Regional Corporation | CTT |
-| 2 | Diego Martin | Regional Corporation | DMN |
-| 3 | Mayaro/Rio Claro | Regional Corporation | MRC |
-| 4 | Penal/Debe | Regional Corporation | PED |
-| 5 | Princes Town | Regional Corporation | PRT |
-| 6 | Sangre Grande | Regional Corporation | SGE |
-| 7 | San Juan/Laventille | Regional Corporation | SJL |
-| 8 | Siparia | Regional Corporation | SIP |
-| 9 | Tunapuna/Piarco | Regional Corporation | TUP |
-| 10 | Arima | Borough | ARI |
-| 11 | Chaguanas | Borough | CHA |
-| 12 | Point Fortin | Borough | PTF |
-| 13 | Port of Spain | City Corporation | POS |
-| 14 | San Fernando | City Corporation | SFO |
-| 15 | Tobago | Ward | TOB |
+| Abbreviation | Name | Type |
+|--------------|------|------|
+| CTT | Couva/Tabaquite/Talparo | Regional Corporation |
+| DMN | Diego Martin | Regional Corporation |
+| MRC | Mayaro/Rio Claro | Regional Corporation |
+| PED | Penal/Debe | Regional Corporation |
+| PRT | Princes Town | Regional Corporation |
+| SGE | Sangre Grande | Regional Corporation |
+| SJL | San Juan/Laventille | Regional Corporation |
+| SIP | Siparia | Regional Corporation |
+| TUP | Tunapuna/Piarco | Regional Corporation |
+| ARI | Arima | Borough |
+| CHA | Chaguanas | Borough |
+| PTF | Point Fortin | Borough |
+| POS | Port of Spain | City Corporation |
+| SFO | San Fernando | City Corporation |
+| TOB | Tobago | Ward |
 
 ## API Reference
 
@@ -518,6 +531,8 @@ SelectFilter::make('type')
 composer test
 ```
 
+For a PostgreSQL test run, create a dedicated `tt_addresses_package_test` database, then run `TT_ADDRESSES_TEST_DB=pgsql DB_HOST=127.0.0.1 DB_PORT=5432 DB_USERNAME=root vendor/bin/pest`. The test setup drops package test tables in that database between tests.
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
@@ -530,7 +545,7 @@ Contributions are welcome! Please see [CONTRIBUTING](CONTRIBUTING.md) for detail
 
 If you notice a city/town/village is missing, please submit a pull request with:
 1. The city name (correctly spelled)
-2. The correct `division_id` (see Administrative Divisions Reference)
+2. The correct division abbreviation (see Administrative Divisions Reference)
 
 ## Security Vulnerabilities
 
