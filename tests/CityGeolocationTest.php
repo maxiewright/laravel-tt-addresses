@@ -106,6 +106,14 @@ it('can order cities by distance', function () {
 });
 
 it('can find nearest city', function () {
+    // Several seeded communities share San Fernando's coordinates, so isolate
+    // the candidate to avoid relying on database order for equal distances.
+    City::query()->update(['latitude' => null, 'longitude' => null]);
+    City::where('name', 'San Fernando')->update([
+        'latitude' => 10.2833,
+        'longitude' => -61.4667,
+    ]);
+
     // Coordinates near San Fernando
     $nearest = City::findNearest(10.29, -61.47);
 

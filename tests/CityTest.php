@@ -121,7 +121,7 @@ it('has san jose de oruna with correct accents', function () {
 });
 
 it('allows duplicate city names in different divisions', function () {
-    // Belmont exists in both Port of Spain (13) and Tobago (15)
+    // Belmont exists in both Port of Spain and Tobago.
     $belmontCities = City::where('name', 'Belmont')->get();
 
     expect($belmontCities)->toHaveCount(2)
